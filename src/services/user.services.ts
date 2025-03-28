@@ -2,18 +2,19 @@ import {
   CreateUserType,
   GetUserType,
   UpdateUserType,
-} from '../interfaces/user.type';
-import { User } from '../models/user.model';
+} from "../interfaces/user.type";
+import { User } from "../models/user.model";
 
 export const UserGetServices = async (): Promise<GetUserType[] | string> => {
   const getAllUsers = await User.find();
 
   if (getAllUsers.length === 0) {
-    throw new Error('No users found');
+    throw new Error("No users found");
   }
 
   const data = getAllUsers.map((user) => {
     const userData: GetUserType = {
+      clerkId: user.clerkId,
       id: user.id,
       name: user.name,
       lastName: user.lastName,
@@ -30,8 +31,22 @@ export const UserGetServices = async (): Promise<GetUserType[] | string> => {
 export const UserCreateServices = async (
   data: CreateUserType
 ): Promise<GetUserType> => {
+  const existingUser = await User.findOne({ clerkId: data.clerkId });
+  if (existingUser) {
+    return {
+      clerkId: existingUser.clerkId,
+      id: existingUser.id,
+      name: existingUser.name,
+      lastName: existingUser.lastName,
+      email: existingUser.email,
+      role: existingUser.role,
+      createdAt: existingUser.createdAt,
+      updatedAt: existingUser.updatedAt,
+    };
+  }
   const newUser = await User.create(data);
   const userData: GetUserType = {
+    clerkId: newUser.clerkId,
     id: newUser.id,
     name: newUser.name,
     lastName: newUser.lastName,
@@ -49,10 +64,11 @@ export const UserFindByIdServices = async (
   const user = await User.findById(id);
 
   if (!user) {
-    throw new Error('No user found');
+    throw new Error("No user found");
   }
 
   const userData: GetUserType = {
+    clerkId: user.clerkId,
     id: user?.id,
     name: user?.name!,
     lastName: user?.lastName!,
@@ -68,10 +84,11 @@ export const UserFindByIdServices = async (
 export const UserUpdateServices = async (id: string, data: UpdateUserType) => {
   const user = await User.findByIdAndUpdate(id, data, { new: true });
   if (!user) {
-    throw new Error('User not exist');
+    throw new Error("User not exist");
   }
 
   const userData: GetUserType = {
+    clerkId: user.clerkId,
     id: user.id,
     name: user.name,
     lastName: user.lastName,
@@ -87,7 +104,7 @@ export const UserUpdateServices = async (id: string, data: UpdateUserType) => {
 export const UserDeleteServices = async (id: string) => {
   const user = await User.findByIdAndDelete(id);
   if (!user) {
-    throw new Error('User not exist');
+    throw new Error("User not exist");
   }
-  return 'Usuario eliminado';
+  return "Usuario eliminado";
 };

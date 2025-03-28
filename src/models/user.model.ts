@@ -3,6 +3,10 @@ import { IUser } from '../interfaces/user.interface';
 
 const UserSchema = new Schema<IUser>(
   {
+    clerkId: {
+      type: String,
+      required: [true, 'El clerk ID es requerido']
+    },
     name: {
       type: String,
       required: [true, 'El nombre es requerido'],

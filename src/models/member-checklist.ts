@@ -42,4 +42,4 @@ const ListSchema = new Schema(
   }
 );
 
-export const Checklist = model('Checklist', ListSchema);
+export const MemberChecklist = model('MemberChecklist', ListSchema);

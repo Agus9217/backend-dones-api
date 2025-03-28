@@ -2,8 +2,8 @@ import { model, Schema } from 'mongoose';
 
 const ItemSchema = new Schema(
   {
-    number: {
-      type: Number,
+    letter: {
+      type: String,
       required: true,
     },
     text: {
@@ -31,9 +31,6 @@ const ListSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
-    clerkId: {
-      type: String
-    },
     items: [ItemSchema],
   },
   {
@@ -42,4 +39,4 @@ const ListSchema = new Schema(
   }
 );
 
-export const Checklist = model('Checklist', ListSchema);
+export const LeaderChecklistResult = model('LeaderChecklistResult', ListSchema);

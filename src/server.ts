@@ -7,8 +7,9 @@ import { connectDb } from './config/mongo/mongodb';
 import { init } from './seed/init';
 
 export const startServer = () => {
-  const app = express();
 
+  const app = express();
+  
   app.use(cors());
   app.use(morgan('dev'));
   app.use(express.json());

@@ -1,5 +1,6 @@
 
 export interface IUser {
+  clerkId: string,
   id: string,
   name: string;
   lastName: string;

@@ -11,7 +11,7 @@ const ItemSchema = new Schema(
       required: true,
     },
     score: {
-      type: Number,
+      type: [Number],
       max: 4,
       min: 0,
       default: null,
@@ -39,4 +39,4 @@ const ListSchema = new Schema(
   }
 );
 
-export const LeaderChecklist = model('leaderChecklist', ListSchema);
+export const LeaderChecklist = model('LeaderChecklist', ListSchema);
