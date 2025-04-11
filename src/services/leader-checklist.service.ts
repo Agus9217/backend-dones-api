@@ -1,5 +1,6 @@
 import { LeaderChecklistResult } from "../models/leader-checklist-result.model";
 import { LeaderChecklist } from "../models/leader-checklist.model";
+import { User } from "../models/user.model";
 
 export interface LeaderData {
   status?: string | undefined;
@@ -9,6 +10,7 @@ export interface LeaderData {
 export interface Question {
   _id: string;
   title: string;
+  clerkId: string;
   items: Item[] | undefined;
   createdAt: Date;
   updatedAt: Date;
@@ -26,19 +28,34 @@ export const LeaderChecklistGetService = async () => {
 };
 
 export const LeaderChecklistPostService = async (checklist: LeaderData) => {
-  const data = checklist.questions?.map((question) => {
-    const itemDetails = question.items?.map((item) => {
+  if (!checklist.questions || checklist.questions.length === 0) {
+    throw new Error("No hay preguntas en el checklist.");
+  }
+
+  const data = await Promise.all(
+    checklist.questions?.map(async (question) => {
+      const user = await User.findOne({ clerkId: question.clerkId });
+
+      if (!user) {
+        throw new Error(
+          `Usuario con clerkId ${question.clerkId} no encontrado`
+        );
+      }
+
+      const itemDetails = question.items?.map((item) => {
+        return {
+          letter: item.letter,
+          text: item.text,
+          score: Number(item.score),
+        };
+      });
       return {
-        letter: item.letter,
-        text: item.text,
-        score: Number(item.score),
+        user: user._id,
+        title: question.title,
+        items: itemDetails,
       };
-    });
-    return {
-      title: question.title,
-      items: itemDetails,
-    };
-  });
+    })
+  );
 
   return LeaderChecklistResult.create(data);
 };

@@ -31,9 +31,6 @@ const ListSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
-    clerkId: {
-      type: String
-    },
     items: [ItemSchema],
   },
   {

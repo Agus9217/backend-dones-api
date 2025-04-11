@@ -1,5 +1,6 @@
 import { Checklist } from "../models/checklist.model";
 import { MemberChecklist } from "../models/member-checklist";
+import { User } from "../models/user.model";
 
 export interface Data {
   status?: string | undefined;
@@ -32,23 +33,32 @@ export const ChecklistGetService = async () => {
 };
 
 export const ChecklistPostService = async (checklist: Data) => {
-  const data = checklist.questions?.map((question) => {
-    // Usamos .map() para iterar sobre los items y hacer algo con ellos
-    const itemDetails = question.items?.map((item) => {
-      // Aquí puedes hacer algo con cada item, por ejemplo, devolver el 'number' y 'text'
-      return {
+
+  if (!checklist.questions || checklist.questions.length === 0) {
+    throw new Error("No hay preguntas en el checklist.");
+  }
+
+  const data = await Promise.all(
+    checklist.questions?.map(async (question) => {
+      const user = await User.findOne({ clerkId: question.clerkId });
+
+      if (!user) {
+        throw new Error(`Usuario con clerkId ${question.clerkId} no encontrado`);
+      }
+
+      const itemDetails = question.items?.map((item) => ({
         number: item.number,
         text: item.text,
         score: Number(item.score),
-      };
-    });
+      }));
 
-    return {
-        clerkId: question.clerkId,
+      return {
+        user: user._id,
         title: question.title,
-        items: itemDetails
-    }
-  });
+        items: itemDetails,
+      };
+    })
+  );
 
   return MemberChecklist.create(data)
 };
